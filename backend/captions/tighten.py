@@ -69,7 +69,10 @@ NONLEXICAL_FILLERS_TA = {
 LEXICAL_FILLERS_TA = {
     # Discourse markers / throat-clearers used as fillers in Tanglish
     "sari", "poda", "paaru", "solla", "aprom", "appuram",
-    "konjam", "romba", "correct",
+    "konjam", "romba",
+    # No "correct": it is English, so lang_detect tags it "en" and this table
+    # never sees it. Tagging it "ta" would make it cuttable in English and
+    # Hindi segments too.
     # Cross-language English crutches used heavily in Tamil speech
     "like", "actually", "basically", "okay", "ok", "right", "so", "well",
 }
@@ -82,7 +85,9 @@ NONLEXICAL_FILLERS_TE = {
 LEXICAL_FILLERS_TE = {
     # Discourse markers used as fillers in Tenglish
     "ante", "ayithe", "emo", "mari", "chala", "manchidi",
-    "telusaa", "therlusaa", "sare",
+    "telusaa", "thelusaa",
+    # No "sare": it is also Hinglish ("sare log", all of them). Tagging it
+    # "te" would put the Hindi word in this table and cut it on a pause.
     # English crutches
     "like", "actually", "basically", "okay", "ok", "right", "so", "well",
 }

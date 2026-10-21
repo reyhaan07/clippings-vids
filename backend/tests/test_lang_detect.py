@@ -20,6 +20,8 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from captions.lang_detect import tag_words
+from captions.tighten import (LEXICAL_FILLERS_TA, LEXICAL_FILLERS_TE,
+                              _filler_sets_for_lang)
 
 
 def _words(*pairs):
@@ -256,6 +258,32 @@ class DetectionEdgeCasesAndIntegrationTest(unittest.TestCase):
             self.assertIn("lang", out["words"][0])
             self.assertEqual(out["words"][0]["lang"], "hi")
             self.assertEqual(out["words"][1]["lang"], "en")
+
+
+class RegionalFillerTableTest(unittest.TestCase):
+    """A regional filler entry only works if lang_detect routes it there."""
+
+    def _table_for(self, word, segment_lang):
+        lang = tag_words(_words(word), segment_lang=segment_lang)[0]["lang"]
+        return lang, _filler_sets_for_lang(lang)[1]
+
+    def test_every_tamil_entry_reaches_a_table_that_has_it(self):
+        for word in sorted(LEXICAL_FILLERS_TA):
+            with self.subTest(word=word):
+                lang, table = self._table_for(word, "ta")
+                self.assertIn(word, table, f"{word!r} is tagged {lang!r}")
+
+    def test_every_telugu_entry_reaches_a_table_that_has_it(self):
+        for word in sorted(LEXICAL_FILLERS_TE):
+            with self.subTest(word=word):
+                lang, table = self._table_for(word, "te")
+                self.assertIn(word, table, f"{word!r} is tagged {lang!r}")
+
+    def test_poda_and_thelusaa_route_to_their_regional_table(self):
+        self.assertEqual(self._table_for("poda", "ta")[0], "ta")
+        self.assertIn("poda", self._table_for("poda", "ta")[1])
+        self.assertEqual(self._table_for("thelusaa", "te")[0], "te")
+        self.assertIn("thelusaa", self._table_for("thelusaa", "te")[1])
 
 
 if __name__ == "__main__":
